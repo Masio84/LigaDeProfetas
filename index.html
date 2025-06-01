@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liga de Profetas - Quiniela de Fútbol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .jornada-selector {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .jornada-selector select {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 2px solid #1e3c72;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+        }
+
+        .partidos-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .partido {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .partido:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .equipos {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .equipo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 120px;
+        }
+
+        .equipo img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .vs {
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 1.2em;
+        }
+
+        .fecha-hora {
+            margin: 0 20px;
+            text-align: center;
+            color: #666;
+            min-width: 100px;
+        }
+
+        .prediccion {
+            display: flex;
+            gap: 10px;
+        }
+
+        .prediccion input[type="radio"] {
+            display: none;
+        }
+
+        .prediccion label {
+            padding: 8px 16px;
+            background: #e9ecef;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .prediccion label:hover {
+            background: #1e3c72;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .prediccion input[type="radio"]:checked + label {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .participante-form {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .participante-form h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .botones {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        /* Modal para reglamento */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 25px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .modal-body ol {
+            margin-left: 20px;
+        }
+
+        .modal-body li {
+            margin-bottom: 15px;
+        }
+
+        .modal-body strong {
+            color: #1e3c72;
+        }
+
+        .modal-body ul {
+            margin: 10px 0 10px 20px;
+        }
+
+        /* Estilos para Administración */
+        .admin-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-section h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .admin-login {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .login-error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .admin-panel {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #1e3c72;
+        }
+
+        .admin-header h4 {
+            color: #1e3c72;
+            margin: 0;
+        }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h5 {
+            margin: 0 0 10px 0;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .stat-card span {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .participacion-admin-item {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .participacion-admin-item.aprobada {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .participacion-admin-item.pendiente {
+            border-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .participacion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .participacion-info {
+            flex: 1;
+        }
+
+        .participacion-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 5px;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: white;
+            border: none;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        .predicciones-mini {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-aprobada {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .jornada-finalizada {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #6c757d;
+        }
+
+        .jornada-finalizada h6 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .participaciones {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .participaciones h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .participacion-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .reglamento {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .reglamento h3 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .reglamento ol {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .reglamento li {
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+
+        @media (max-width: 768px) {
+            .partido {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .equipos {
+                justify-content: center;
+            }
+
+            .botones {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚽ Liga de Profetas ⚽</h1>
+            <p>Quiniela de Fútbol Liga MX - Participación: $10 MXN</p>
+        </div>
+
+        <div class="jornada-selector">
+            <label for="jornadaSelect">Seleccionar Jornada:</label>
+            <select id="jornadaSelect">
+                <option value="">Cargando jornadas...</option>
+            </select>
+        </div>
+
+        <div id="loading" class="loading">
+            <p>Cargando datos de los partidos...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="success" class="success" style="display: none;"></div>
+
+        <div id="partidosContainer" class="partidos-container" style="display: none;">
+            <h3>Partidos de la Jornada</h3>
+            <div id="partidos"></div>
+        </div>
+
+        <div class="participante-form">
+            <h3>Datos del Participante</h3>
+            <div class="form-group">
+                <label for="nombre">Nombre Completo:</label>
+                <input type="text" id="nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="telefono">Teléfono (WhatsApp):</label>
+                <input type="tel" id="telefono" required>
+            </div>
+            <div class="botones">
+                <button class="btn btn-primary" onclick="guardarQuiniela()">💾 Guardar Quiniela ($10 MXN)</button>
+                <button class="btn btn-secondary" onclick="nuevaQuiniela()">🔄 Nueva Quiniela</button>
+                <button class="btn btn-info" onclick="mostrarParticipaciones()">📋 Ver Participaciones</button>
+                <button class="btn btn-warning" onclick="mostrarReglamento()">📜 Reglamento</button>
+            </div>
+        </div>
+
+        <div id="participacionesContainer" class="participaciones" style="display: none;">
+            <h3>Participaciones Registradas</h3>
+            <div id="participacionesList"></div>
+        </div>
+
+        <!-- Modal para Reglamento -->
+        <div id="reglamentoModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📜 Reglamento Oficial - Liga de Profetas</h2>
+                    <button class="close" onclick="cerrarReglamento()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <ol>
+                        <li><strong>EL GANADOR</strong> será el participante con mayor cantidad de aciertos, si hay más de un ganador, el premio se reparte en partes iguales.</li>
+                        
+                        <li><strong>PARTIDO SUSPENDIDO O APLAZADO.</strong> Si el partido es suspendido o aplazado antes de comenzar, será nulo para efectos de la quiniela. Si se suspende ya iniciado el partido y no se reanuda antes de terminar la quiniela, se tomará en cuenta el resultado al momento de la suspensión. Para que el partido aplazado sea válido deberá de jugarse antes de que termine el último partido de nuestra quiniela.</li>
+                        
+                        <li><strong>QUINIELAS MÚLTIPLES.</strong> Las quinielas múltiples incrementan tus posibilidades de ganar. 
+                            <br><strong>FORMAS DE JUGAR QUINIELAS MÚLTIPLES:</strong>
+                            <ul>
+                                <li><strong>Quiniela Doble</strong> consiste en seleccionar 2 pronósticos de estas tres opciones: local-empate, empate-visita y local–visita.</li>
+                                <li><strong>Quiniela Triple</strong> asegura tu casillero seleccionando los tres pronósticos (Local, Empate y Visita).</li>
+                            </ul>
+                        </li>
+                        
+                        <li><strong>LISTA PREVIA.</strong> Se publicará una lista previa a la oficial en donde podrás hacer correcciones sólo por mala captura de la administración, al terminar el tiempo ya no hay reclamaciones.</li>
+                        
+                        <li><strong>LISTA OFICIAL.</strong> Las quinielas participan tal como aparecen en el listado, si ya salió la lista oficial y está mal capturada, podrá pedir la devolución de su dinero siempre y cuando sea antes de que comience el primer partido, si no apareces en la lista oficial no estas participando.</li>
+                        
+                        <li><strong>RESULTADOS OFICIALES.</strong> Se tomará en cuenta el resultado del partido sólo el tiempo reglamentario, 90 minutos más el agregado excluyendo tiempos extras o penales.</li>
+                        
+                        <li><strong>REPARTO DE PREMIOS.</strong> Se entregará el 70% de lo recabado, el resto es destinado para pago de comisiones, publicidad y gastos administrativos.</li>
+                        
+                        <li><strong>PREMIO DE 1er LUGAR.</strong> Se destinará el 80% de la bolsa total para el primer lugar.</li>
+                        
+                        <li><strong>PREMIO DE 2do LUGAR.</strong> Se destinará el 20% de la bolsa total al premio del segundo lugar. Si resultan más de 10 ganadores del segundo lugar, éste premio se acumulará para la próxima semana en la bolsa del segundo lugar. A la Tercer semana acumulada, se repartirá el premio sin importar el número de ganadores del segundo lugar.</li>
+                        
+                        <li><strong>PAGO A GANADORES.</strong> Los pagos se realizarán un día después de terminados los partidos por medio de transferencia o depósito bancario. Si el ganador no tiene efectuado su respectivo pago sin importar el motivo, no será acreedor al premio.</li>
+                    </ol>
+                    
+                    <p style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px; font-weight: bold; text-align: center; color: #1e3c72; border: 2px solid #1e3c72;">
+                        AL PARTICIPAR EN LA QUINIELA SE DA POR ENTENDIDO QUE ESTÁ DE ACUERDO CON TODAS LAS REGLAS DE LA QUINIELA
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <h3>🔐 Administración</h3>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="admin-login">
+                <div class="form-group">
+                    <label for="adminUser">Usuario:</label>
+                    <input type="text" id="adminUser" placeholder="Ingresa tu usuario">
+                </div>
+                <div class="form-group">
+                    <label for="adminPass">Contraseña:</label>
+                    <input type="password" id="adminPass" placeholder="Ingresa tu contraseña">
+                </div>
+                <button class="btn btn-primary" onclick="iniciarSesionAdmin()">🔑 Iniciar Sesión</button>
+                <div id="loginError" class="login-error" style="display: none;"></div>
+            </div>
+
+            <!-- Panel de Control -->
+            <div id="adminPanel" class="admin-panel" style="display: none;">
+                <div class="admin-header">
+                    <h4>Panel de Control - Jornada <span id="jornadaActualAdmin"></span></h4>
+                    <button class="btn btn-secondary" onclick="cerrarSesionAdmin()">🚪 Cerrar Sesión</button>
+                </div>
+                
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <h5>Participaciones Pendientes</h5>
+                        <span id="participacionesPendientes">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h5>Participaciones Aprobadas</h5>
+                        <span id="participacionesAprobadas">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h5>Total Recaudado</h5>
+                        <span id="totalRecaudado">$0</span>
+                    </div>
+                </div>
+
+                <div class="admin-actions">
+                    <button class="btn btn-info" onclick="finalizarJornada()">🏁 Finalizar Jornada</button>
+                    <button class="btn btn-warning" onclick="exportarDatos()">📊 Exportar Datos</button>
+                </div>
+
+                <div class="participaciones-admin">
+                    <h5>Participaciones de la Jornada Actual</h5>
+                    <div id="participacionesAdminList"></div>
+                </div>
+
+                <div class="jornadas-finalizadas">
+                    <h5>Jornadas Finalizadas</h5>
+                    <div id="jornadasFinalizadasList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos simulados (en implementación real se conectaría a la API de Liga MX)
+        const equiposLogos = {
+            'América': 'https://logoeps.com/wp-content/uploads/2013/03/america-vector-logo.png',
+            'Guadalajara': 'https://logoeps.com/wp-content/uploads/2013/03/guadalajara-vector-logo.png',
+            'Cruz Azul': 'https://logoeps.com/wp-content/uploads/2013/03/cruz-azul-vector-logo.png',
+            'Pumas': 'https://logoeps.com/wp-content/uploads/2013/03/pumas-unam-vector-logo.png',
+            'Tigres': 'https://logoeps.com/wp-content/uploads/2013/03/tigres-uanl-vector-logo.png',
+            'Monterrey': 'https://logoeps.com/wp-content/uploads/2013/03/monterrey-vector-logo.png',
+            'Santos': 'https://logoeps.com/wp-content/uploads/2013/03/santos-laguna-vector-logo.png',
+            'León': 'https://logoeps.com/wp-content/uploads/2013/03/leon-vector-logo.png',
+            'Toluca': 'https://logoeps.com/wp-content/uploads/2013/03/toluca-vector-logo.png',
+            'Atlas': 'https://logoeps.com/wp-content/uploads/2013/03/atlas-vector-logo.png'
+        };
+
+        // Datos simulados de partidos
+        const partidosSimulados = [
+            {
+                local: 'América',
+                visitante: 'Guadalajara',
+                fecha: '2025-06-07',
+                hora: '20:00'
+            },
+            {
+                local: 'Cruz Azul',
+                visitante: 'Pumas',
+                fecha: '2025-06-07',
+                hora: '18:00'
+            },
+            {
+                local: 'Tigres',
+                visitante: 'Monterrey',
+                fecha: '2025-06-08',
+                hora: '19:00'
+            },
+            {
+                local: 'Santos',
+                visitante: 'León',
+                fecha: '2025-06-08',
+                hora: '21:00'
+            },
+            {
+                local: 'Toluca',
+                visitante: 'Atlas',
+                fecha: '2025-06-09',
+                hora: '17:00'
+            }
+        ];
+
+        let participaciones = [];
+        let participacionesAprobadas = [];
+        let jornadasFinalizadas = [];
+        let adminLoggedIn = false;
+        let quinielaActual = {};
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarJornadas();
+            cargarPartidos();
+        });
+
+        function cargarJornadas() {
+            const select = document.getElementById('jornadaSelect');
+            select.innerHTML = '';
+            
+            // Simular jornadas (1-17 para liga regular)
+            for (let i = 1; i <= 17; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Jornada ${i}`;
+                select.appendChild(option);
+            }
+            
+            // Seleccionar jornada actual (simulada)
+            select.value = '1';
+            select.addEventListener('change', cargarPartidos);
+        }
+
+        function cargarPartidos() {
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('partidosContainer');
+            const partidosDiv = document.getElementById('partidos');
+            
+            loading.style.display = 'block';
+            container.style.display = 'none';
+            
+            // Simular carga de datos
+            setTimeout(() => {
+                partidosDiv.innerHTML = '';
+                
+                partidosSimulados.forEach((partido, index) => {
+                    const partidoDiv = document.createElement('div');
+                    partidoDiv.className = 'partido';
+                    
+                    const logoLocal = equiposLogos[partido.local] || 'https://via.placeholder.com/40x40?text=L';
+                    const logoVisitante = equiposLogos[partido.visitante] || 'https://via.placeholder.com/40x40?text=V';
+                    
+                    partidoDiv.innerHTML = `
+                        <div class="equipos">
+                            <div class="equipo">
+                                <img src="${logoLocal}" alt="${partido.local}" onerror="this.src='https://via.placeholder.com/40x40?text=L'">
+                                <span>${partido.local}</span>
+                            </div>
+                            <div class="vs">VS</div>
+                            <div class="equipo">
+                                <img src="${logoVisitante}" alt="${partido.visitante}" onerror="this.src='https://via.placeholder.com/40x40?text=V'">
+                                <span>${partido.visitante}</span>
+                            </div>
+                        </div>
+                        <div class="fecha-hora">
+                            <div>${formatearFecha(partido.fecha)}</div>
+                            <div>${partido.hora}</div>
+                        </div>
+                        <div class="prediccion">
+                            <input type="radio" id="local_${index}" name="partido_${index}" value="L">
+                            <label for="local_${index}">L</label>
+                            
+                            <input type="radio" id="empate_${index}" name="partido_${index}" value="E">
+                            <label for="empate_${index}">E</label>
+                            
+                            <input type="radio" id="visitante_${index}" name="partido_${index}" value="V">
+                            <label for="visitante_${index}">V</label>
+                        </div>
+                    `;
+                    
+                    partidosDiv.appendChild(partidoDiv);
+                });
+                
+                loading.style.display = 'none';
+                container.style.display = 'block';
+            }, 1500);
+        }
+
+        function formatearFecha(fecha) {
+            const opciones = { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            };
+            return new Date(fecha).toLocaleDateString('es-MX', opciones);
+        }
+
+        function guardarQuiniela() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            
+            if (!nombre || !telefono) {
+                mostrarError('Por favor, completa todos los campos del participante.');
+                return;
+            }
+            
+            // Recopilar predicciones
+            const predicciones = [];
+            partidosSimulados.forEach((partido, index) => {
+                const prediccion = document.querySelector(`input[name="partido_${index}"]:checked`);
+                if (prediccion) {
+                    predicciones.push({
+                        partido: `${partido.local} vs ${partido.visitante}`,
+                        prediccion: prediccion.value
+                    });
+                }
+            });
+            
+            if (predicciones.length === 0) {
+                mostrarError('Por favor, selecciona al menos una predicción.');
+                return;
+            }
+            
+            // Guardar participación
+            const participacion = {
+                id: Date.now(),
+                nombre: nombre,
+                telefono: telefono,
+                fecha: new Date().toLocaleDateString('es-MX'),
+                hora: new Date().toLocaleTimeString('es-MX'),
+                predicciones: predicciones,
+                jornada: document.getElementById('jornadaSelect').value,
+                aprobada: false, // Por defecto pendiente de aprobación
+                fechaRegistro: new Date().toISOString()
+            };
+            
+            participaciones.push(participacion);
+            
+            mostrarExito(`¡Quiniela guardada exitosamente! Participante: ${nombre}. Costo: $10 MXN (Pendiente de aprobación)`);
+            
+            // Actualizar panel de admin si está abierto
+            if (adminLoggedIn) {
+                cargarPanelAdmin();
+            }
+            
+            // Limpiar formulario
+            document.getElementById('nombre').value = '';
+            document.getElementById('telefono').value = '';
+            
+            // Limpiar predicciones
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+        }
+
+        function nuevaQuiniela() {
+            // Limpiar formulario
+            document.getElementById('nombre').value = '';
+            document.getElementById('telefono').value = '';
+            
+            // Limpiar predicciones
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            
+            mostrarExito('Formulario limpio. ¡Lista para una nueva quiniela!');
+        }
+
+        function mostrarParticipaciones() {
+            const container = document.getElementById('participacionesContainer');
+            const list = document.getElementById('participacionesList');
+            
+            if (participaciones.length === 0) {
+                mostrarError('No hay participaciones registradas aún.');
+                return;
+            }
+            
+            list.innerHTML = '';
+            
+            participaciones.forEach(participacion => {
+                const div = document.createElement('div');
+                div.className = 'participacion-item';
+                
+                const prediccionesStr = participacion.predicciones.map(p => 
+                    `${p.partido}: ${p.prediccion}`
+                ).join(' | ');
+                
+                div.innerHTML = `
+                    <strong>${participacion.nombre}</strong> - ${participacion.telefono}<br>
+                    <small>Jornada ${participacion.jornada} - ${participacion.fecha} ${participacion.hora}</small><br>
+                    <small>Predicciones: ${prediccionesStr}</small>
+                `;
+                
+                list.appendChild(div);
+            });
+            
+            container.style.display = container.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function mostrarReglamento() {
+            const modal = document.getElementById('reglamentoModal');
+            modal.style.display = 'block';
+            
+            // Prevenir scroll del body cuando el modal está abierto
+            document.body.style.overflow = 'hidden';
+            
+            // Cerrar modal al hacer clic fuera de él
+            modal.onclick = function(event) {
+                if (event.target == modal) {
+                    cerrarReglamento();
+                }
+            }
+        }
+
+        function cerrarReglamento() {
+            const modal = document.getElementById('reglamentoModal');
+            modal.style.display = 'none';
+            
+            // Restaurar scroll del body
+            document.body.style.overflow = 'auto';
+        }
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                cerrarReglamento();
+            }
+        });
+
+        // Funciones de Administración
+        function iniciarSesionAdmin() {
+            const usuario = document.getElementById('adminUser').value;
+            const password = document.getElementById('adminPass').value;
+            
+            if (usuario === 'Masio' && password === 'yomero14') {
+                adminLoggedIn = true;
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('loginError').style.display = 'none';
+                
+                // Limpiar campos
+                document.getElementById('adminUser').value = '';
+                document.getElementById('adminPass').value = '';
+                
+                cargarPanelAdmin();
+                mostrarExito('Sesión iniciada correctamente');
+            } else {
+                document.getElementById('loginError').textContent = 'Usuario o contraseña incorrectos';
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function cerrarSesionAdmin() {
+            adminLoggedIn = false;
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'none';
+            mostrarExito('Sesión cerrada');
+        }
+
+        function cargarPanelAdmin() {
+            const jornadaActual = document.getElementById('jornadaSelect').value || '1';
+            document.getElementById('jornadaActualAdmin').textContent = jornadaActual;
+            
+            // Filtrar participaciones de la jornada actual
+            const participacionesJornada = participaciones.filter(p => p.jornada === jornadaActual);
+            const pendientes = participacionesJornada.filter(p => !p.aprobada);
+            const aprobadas = participacionesJornada.filter(p => p.aprobada);
+            
+            // Actualizar estadísticas
+            document.getElementById('participacionesPendientes').textContent = pendientes.length;
+            document.getElementById('participacionesAprobadas').textContent = aprobadas.length;
+            document.getElementById('totalRecaudado').textContent = `${(pendientes.length + aprobadas.length) * 10}`;
+            
+            // Mostrar participaciones
+            mostrarParticipacionesAdmin(participacionesJornada);
+            mostrarJornadasFinalizadas();
+        }
+
+        function mostrarParticipacionesAdmin(participacionesJornada) {
+            const container = document.getElementById('participacionesAdminList');
+            container.innerHTML = '';
+            
+            if (participacionesJornada.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No hay participaciones para esta jornada</p>';
+                return;
+            }
+            
+            participacionesJornada.forEach(participacion => {
+                const div = document.createElement('div');
+                div.className = `participacion-admin-item ${participacion.aprobada ? 'aprobada' : 'pendiente'}`;
+                
+                const prediccionesStr = participacion.predicciones.map(p => 
+                    `${p.partido.split(' vs ')[0].substring(0, 3)} vs ${p.partido.split(' vs ')[1].substring(0, 3)}: ${p.prediccion}`
+                ).join(' | ');
+                
+                div.innerHTML = `
+                    <div class="participacion-header">
+                        <div class="participacion-info">
+                            <strong>${participacion.nombre}</strong> - ${participacion.telefono}
+                            <span class="status-badge ${participacion.aprobada ? 'status-aprobada' : 'status-pendiente'}">
+                                ${participacion.aprobada ? 'APROBADA' : 'PENDIENTE'}
+                            </span>
+                        </div>
+                        <div class="participacion-actions">
+                            ${!participacion.aprobada ? 
+                                `<button class="btn btn-small btn-approve" onclick="aprobarParticipacion(${participacion.id})">✓ Aprobar</button>` : 
+                                ''}
+                            <button class="btn btn-small btn-delete" onclick="eliminarParticipacion(${participacion.id})">✗ Eliminar</button>
+                        </div>
+                    </div>
+                    <div class="predicciones-mini">
+                        <small><strong>Registrado:</strong> ${participacion.fecha} ${participacion.hora}</small><br>
+                        <small><strong>Predicciones:</strong> ${prediccionesStr}</small>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        function aprobarParticipacion(id) {
+            const participacion = participaciones.find(p => p.id === id);
+            if (participacion) {
+                participacion.aprobada = true;
+                participacion.fechaAprobacion = new Date().toLocaleString('es-MX');
+                cargarPanelAdmin();
+                mostrarExito(`Participación de ${participacion.nombre} aprobada`);
+            }
+        }
+
+        function eliminarParticipacion(id) {
+            const participacion = participaciones.find(p => p.id === id);
+            if (participacion && confirm(`¿Estás seguro de eliminar la participación de ${participacion.nombre}?`)) {
+                participaciones = participaciones.filter(p => p.id !== id);
+                cargarPanelAdmin();
+                mostrarExito(`Participación de ${participacion.nombre} eliminada`);
+            }
+        }
+
+        function finalizarJornada() {
+            const jornadaActual = document.getElementById('jornadaSelect').value || '1';
+            const participacionesJornada = participaciones.filter(p => p.jornada === jornadaActual && p.aprobada);
+            
+            if (participacionesJornada.length === 0) {
+                mostrarError('No hay participaciones aprobadas para finalizar la jornada');
+                return;
+            }
+            
+            if (confirm(`¿Finalizar Jornada ${jornadaActual}? Se moverán ${participacionesJornada.length} participaciones aprobadas`)) {
+                // Crear registro de jornada finalizada
+                const jornadaFinalizada = {
+                    numero: jornadaActual,
+                    fecha: new Date().toLocaleString('es-MX'),
+                    participaciones: [...participacionesJornada],
+                    totalRecaudado: participacionesJornada.length * 10,
+                    ganadores: [] // Se calcularían los ganadores aquí
+                };
+                
+                jornadasFinalizadas.push(jornadaFinalizada);
+                
+                // Remover participaciones de la jornada actual
+                participaciones = participaciones.filter(p => p.jornada !== jornadaActual);
+                
+                cargarPanelAdmin();
+                mostrarExito(`Jornada ${jornadaActual} finalizada correctamente`);
+            }
+        }
+
+        function mostrarJornadasFinalizadas() {
+            const container = document.getElementById('jornadasFinalizadasList');
+            container.innerHTML = '';
+            
+            if (jornadasFinalizadas.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No hay jornadas finalizadas</p>';
+                return;
+            }
+            
+            jornadasFinalizadas.forEach(jornada => {
+                const div = document.createElement('div');
+                div.className = 'jornada-finalizada';
+                
+                div.innerHTML = `
+                    <h6>Jornada ${jornada.numero} - Finalizada el ${jornada.fecha}</h6>
+                    <p><strong>Participaciones:</strong> ${jornada.participaciones.length}</p>
+                    <p><strong>Total Recaudado:</strong> ${jornada.totalRecaudado}</p>
+                    <button class="btn btn-small btn-info" onclick="verDetallesJornada(${jornada.numero})">Ver Detalles</button>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        function verDetallesJornada(numeroJornada) {
+            const jornada = jornadasFinalizadas.find(j => j.numero == numeroJornada);
+            if (jornada) {
+                alert(`Jornada ${jornada.numero}\nParticipaciones: ${jornada.participaciones.length}\nRecaudado: ${jornada.totalRecaudado}\nFecha: ${jornada.fecha}`);
+            }
+        }
+
+        function exportarDatos() {
+            const datos = {
+                participacionesActuales: participaciones,
+                jornadasFinalizadas: jornadasFinalizadas,
+                fechaExportacion: new Date().toLocaleString('es-MX')
+            };
+            
+            const dataStr = JSON.stringify(datos, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `liga_profetas_datos_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            mostrarExito('Datos exportados correctamente');
+        }
+
+        function mostrarError(mensaje) {
+            const errorDiv = document.getElementById('error');
+            const successDiv = document.getElementById('success');
+            
+            errorDiv.textContent = mensaje;
+            errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function mostrarExito(mensaje) {
+            const errorDiv = document.getElementById('error');
+            const successDiv = document.getElementById('success');
+            
+            successDiv.textContent = mensaje;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
